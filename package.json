@@ -14,7 +14,7 @@
     "start:prod": "node dist/main.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint . --max-warnings=0",
-    "format:check": "prettier --check package.json package-lock.json nest-cli.json tsconfig*.json eslint.config.mjs .prettierrc.json prisma.config.ts compose.yaml \"src/**/*.ts\"",
+    "format:check": "prettier --check package.json package-lock.json nest-cli.json tsconfig*.json eslint.config.mjs .prettierrc.json prisma.config.ts compose.yaml \"src/**/*.ts\" \"prisma/**/*.ts\"",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "overrides": {
@@ -46,17 +46,23 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/prisma"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.ts",
-      "!main.ts",
-      "!generated/**"
+      "src/**/*.ts",
+      "prisma/**/*.ts",
+      "!src/main.ts",
+      "!src/generated/**",
+      "!**/*.spec.ts"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "coverage",
     "testEnvironment": "node"
   },
   "devDependencies": {
