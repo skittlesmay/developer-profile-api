@@ -1,0 +1,14 @@
+node_modules
+dist
+src/generated/prisma
+coverage
+.git
+.local
+.env*
+.aws
+AGENTS.md
+**/*.pdf
+**/*.log
+**/*.tsbuildinfo
+test
+**/*.spec.ts
