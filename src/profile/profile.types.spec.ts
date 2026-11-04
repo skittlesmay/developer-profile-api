@@ -4,7 +4,7 @@ import {
 } from '@nestjs/graphql';
 import { Test } from '@nestjs/testing';
 import { isObjectType } from 'graphql';
-import { Profile } from './profile.types';
+import { ProfileResolver } from './profile.resolver';
 
 describe('Profile GraphQL types', () => {
   it('exposes exactly the public fields with the required nullability', async () => {
@@ -13,10 +13,16 @@ describe('Profile GraphQL types', () => {
     }).compile();
 
     try {
-      const schema = await moduleRef.get(GraphQLSchemaFactory).create([], {
-        orphanedTypes: [Profile],
-        skipCheck: true,
-      });
+      const schema = await moduleRef
+        .get(GraphQLSchemaFactory)
+        .create([ProfileResolver]);
+      expect(schema.getQueryType()?.getFields().profile.type.toString()).toBe(
+        'Profile',
+      );
+      expect(Object.keys(schema.getQueryType()?.getFields() ?? {})).toEqual([
+        'profile',
+      ]);
+      expect(schema.getMutationType()).toBeUndefined();
       const expected = {
         Profile: {
           id: 'ID!',
