@@ -1,0 +1,116 @@
+name: platon-profile
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: '10m'
+    max-file: '3'
+
+x-api-environment: &api-environment
+  NODE_ENV: production
+  PORT: '3000'
+  DATABASE_URL: postgresql://${POSTGRES_USER:?POSTGRES_USER is required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@db:5432/${POSTGRES_DB:?POSTGRES_DB is required}
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [database]
+    mem_limit: 256m
+    cpus: 0.5
+    restart: unless-stopped
+    logging: *logging
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"',
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  init:
+    image: platon-profile-init:${RELEASE:?RELEASE is required}
+    build:
+      context: .
+      target: init
+    environment: *api-environment
+    networks: [database]
+    mem_limit: 384m
+    cpus: 0.5
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: 'no'
+    logging: *logging
+
+  api:
+    image: platon-profile-api:${RELEASE:?RELEASE is required}
+    build:
+      context: .
+      target: runtime
+    environment: *api-environment
+    networks: [web, database]
+    mem_limit: 512m
+    cpus: 0.5
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    logging: *logging
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/health', {signal:AbortSignal.timeout(2000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 15s
+
+  nginx:
+    image: nginx:1.28-alpine
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./.deploy/nginx:/etc/nginx/conf.d:ro,z
+      - certificates:/etc/letsencrypt:ro
+      - acme_webroot:/var/www/certbot:ro
+    networks: [web]
+    mem_limit: 128m
+    cpus: 0.25
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    logging: *logging
+
+  certbot:
+    image: certbot/certbot:v5.1.0
+    profiles: [tools]
+    volumes:
+      - certificates:/etc/letsencrypt
+      - acme_webroot:/var/www/certbot
+    networks: [web]
+    mem_limit: 256m
+    cpus: 0.5
+    logging: *logging
+
+networks:
+  web:
+  database:
+    internal: true
+
+volumes:
+  postgres_data:
+  certificates:
+  acme_webroot:

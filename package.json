@@ -14,7 +14,7 @@
     "start:prod": "node dist/main.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint . --max-warnings=0",
-    "format:check": "prettier --check package.json package-lock.json nest-cli.json tsconfig*.json eslint.config.mjs .prettierrc.json prisma.config.ts compose.yaml \"src/**/*.ts\" \"prisma/**/*.ts\" \"test/**/*.ts\" test/jest-e2e.json",
+    "format:check": "prettier --check package.json package-lock.json nest-cli.json tsconfig*.json eslint.config.mjs .prettierrc.json prisma.config.ts compose.yaml compose.prod.yaml \"src/**/*.ts\" \"prisma/**/*.ts\" \"test/**/*.ts\" test/jest-e2e.json",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config test/jest-e2e.json"
   },

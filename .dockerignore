@@ -12,3 +12,5 @@ AGENTS.md
 **/*.tsbuildinfo
 test
 **/*.spec.ts
+.deploy
+deploy
