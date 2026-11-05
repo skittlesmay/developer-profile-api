@@ -57,7 +57,7 @@ preflight() {
   free_kb=$(df -Pk "$ROOT" | awk 'END {print $4}')
   (( free_kb >= 5 * 1024 * 1024 )) || fail 'At least 5 GiB free disk space is required.'
   (( available >= 768 * 1024 )) || fail 'Less than 768 MiB RAM available. Do not build now.'
-  if (( available < 3 * 1024 * 1024 && swap < 2 * 1024 * 1024 )); then
+  if (( available < 3 * 1024 * 1024 && swap < 2047 * 1024 )); then
     fail 'On a small host, configure at least 2 GiB swap before building.'
   fi
   printf 'Available RAM: %s KiB; swap: %s KiB; free disk: %s KiB\n' "$available" "$swap" "$free_kb"
