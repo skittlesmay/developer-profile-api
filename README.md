@@ -1,6 +1,6 @@
-# Developer Profile API
+# Developer Platon Profile API
 
-Backend цифровой визитки Платона Савушкина. GraphQL API возвращает профиль, профессиональные ссылки, навыки, опыт и проекты. Приложение развернуто на VPS и доступно по HTTPS.
+Backend цифровой визитки Платона Савушкина. GraphQL API возвращает информацию обо мне, ссылки на GitHub и Telegram, навыки, опыт работы и проекты. Приложение развернуто на VPS и доступно по HTTPS.
 
 **[Открыть API в Apollo Sandbox](https://platon.safeq.studio/graphql)** · **[Healthcheck](https://platon.safeq.studio/health)**
 
@@ -79,7 +79,7 @@ Resolver связывает GraphQL-поля с service и loaders. `ProfileServ
 
 DataLoader выбран вместо eager `include`, чтобы читать только запрошенные связи и объединять повторные обращения, в том числе через aliases. Для `{ profile { name } }` выполняется одно чтение профиля, для полного ProfileCard - одно чтение профиля и четыре чтения связей. Выбор отдельных скалярных полей внутри связи не меняет запрос к БД: loader читает строки модели связи целиком.
 
-Для проверки API в браузере включен Apollo Sandbox через официальный landing page plugin. Introspection дает подсказки по схеме, GraphiQL отключен. Sandbox доступен и в production; его интерфейс загружается с ресурсов Apollo. 
+Для проверки API в браузере включен Apollo Sandbox через официальный landing page plugin. Introspection дает подсказки по схеме, GraphiQL отключен. Sandbox доступен и в production; его интерфейс загружается с ресурсов Apollo.
 
 ## Модель данных
 
