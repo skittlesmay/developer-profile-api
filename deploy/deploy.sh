@@ -20,7 +20,7 @@ esac
 for tool in docker flock curl awk df stat; do
   command -v "$tool" >/dev/null || fail "Required command is missing: $tool"
 done
-[[ -f .env ]] || fail 'Create the private .env first; see deploy/README.md.'
+[[ -f .env ]] || fail 'Create the private .env first; see README.md, Deployment.'
 [[ $(stat -c '%a' .env) == 600 ]] || fail 'Set .env permissions to 600.'
 mkdir -p "$STATE/nginx" "$STATE/backups"
 exec 9>"$STATE/deploy.lock"
